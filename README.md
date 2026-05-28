@@ -1,53 +1,48 @@
 # 🧟 Zombie Kingdom Defense ULTRA
 
-A strategic tower defense game built from scratch using Python and the Pygame library. Strategically place diverse defensive towers along a winding path to protect your kingdom from increasingly challenging waves of normal, fast, and heavily-armored tank zombies.
+A strategic, action-packed tower defense game built from scratch using Python and the Pygame library. Defend your kingdom path against endless, scaling waves of zombies, and prepare your defenses for the massive Boss fights that arrive every 5 waves!
 
 ---
 
 ## 🚀 Features
 
-* **Dynamic Wave System**: Face endless waves of zombies that grow exponentially in speed and health as the game progresses.
-* **Diverse Enemy Archetypes**:
-    * `Normal Zombie`: Balanced speed and health.
-    * `Fast Zombie`: Quick movement but fragile.
-    * `Tank Zombie`: Slow-moving but heavily armored giants.
-* **4 Unique Tower Types**:
-    * ⚔️ **Knight Tower**: Rapid, high-damage physical attacker with balanced range.
-    * 🏹 **Archer Tower**: Exceptional firing speed with great tactical range.
-    * 🔮 **Mage Tower**: Launches mystical projectiles that cause area-of-effect (AoE) blast damage.
-    * 🎯 **Sniper Tower**: High-cost, slow-firing caliber designed to safely decimate high-health targets from afar.
-* **Interactive Visual Shop UI**: A clean, sidebar heads-up display showcasing tower hotkeys, gold costs, and selection states.
-* **Range Preview Indicator**: Hovering your mouse dynamically renders a transparent visual indicator of your selected tower's radius before placing it.
-* **Persistent High Score Saving**: Tracks your record wave across play sessions using a local `highscore.txt` profile.
+* **Dynamic Scaling System**: Zombies dynamically gain more health and movement speed with each passing wave, keeping the gameplay challenging.
+* **Every 5 Waves - BOSS WAVE**: Face a colossal Boss Zombie equipped with 10x normal health and a golden crown. The Boss doesn't come alone—a tactical wave of smaller minions runs alongside him!
+* **Dynamic Visual Models**: Built entirely with code-rendered graphics. Watch your towers dynamically rotate, aim, and track targets in real-time.
+* **4 Specialized Tower Types**:
+    * ⚔️ **Knight Tower** ($100 Gold): High-damage physical attacker with balanced range.
+    * 🏹 **Archer Tower** ($100 Gold): Rapid firing speed, perfect for cleaning up fast moving targets.
+    * 🔮 **Mage Tower** ($200 Gold): Deals powerful Area-of-Effect (AoE) splash damage with magical bursts.
+    * 🎯 **Sniper Tower** ($500 Gold): Long-range caliber designed specifically to melt down high-health Bosses and Tanks.
+* **Refund/Sell Subsystem**: Instantly enter Sell Mode to remove existing towers and recover **75% of their total value** in gold.
+* **Persistent High Scores**: Tracks and saves your highest wave locally using a `highscore.txt` profile.
 
 ---
 
 ## 🎮 Controls & How to Play
 
-The game is controlled using a combination of mouse clicks for placement/upgrades and keyboard keys for selecting towers and navigating menus.
+Manage your economy carefully, choose the right towers for the job, and remember to upgrade your frontline defenses!
 
-### Mouse Controls
-* 🖱️ **`Left-Click (Vasak klõps)`**: 
-    * **In Game**: Place your currently selected tower on the grass area.
-    * **In Menus**: Click anywhere on the start menu or game over screen to start/restart the game.
-* 🖱️ **`Right-Click (Parem klõps)`**: 
-    * **In Game**: Click on an existing tower to **upgrade** it. Upgrading increases its base damage, attack range, and firing rate (costs gold).
+### Mouse Actions
+* 🖱️ **`Left-Click`**: 
+    * *In Game Area*: Place your currently selected tower type on the grass.
+    * *In Sell Mode*: Click on a tower to instantly sell it for a 75% refund.
+    * *In Menus*: Click anywhere to start or restart the game.
+* 🖱️ **`Right-Click`**: Click on an already placed tower to **Upgrade** it. Upgrades permanently increase its damage, range, and attack speed.
 
-### Keyboard Hotkeys (Tower Selection)
-Press the corresponding number keys on your keyboard to toggle which tower archetype you want to build from the shop panel:
-* ⌨️ **`1`** — Select **Knight Tower** (Cost: 100 Gold)
-* ⌨️ **`2`** — Select **Archer Tower** (Cost: 50 Gold)
-* ⌨️ **`3`** — Select **Mage Tower** (Cost: 200 Gold)
-* ⌨️ **`4`** — Select **Sniper Tower** (Cost: 250 Gold)
-
-### System Controls
-* ⌨️ **`ESC`**: Pause or resume the game at any time during active gameplay waves.
+### Keyboard Shortcuts
+* ⌨️ **`1`** — Select **Knight Tower**
+* ⌨️ **`2`** — Select **Archer Tower**
+* ⌨️ **`3`** — Select **Mage Tower**
+* ⌨️ **`4`** — Select **Sniper Tower**
+* ⌨️ **`S`** — Toggle **Sell Mode** on / off
+* ⌨️ **`ESC`** — Pause / Resume the game
 
 ---
 
-## 🛠️ Requirements & Installation
+## 🛠️ Installation & Setup
 
-Before running the game, make sure you have Python 3.x and Pygame installed on your computer.
+Make sure you have Python 3.x and Pygame installed on your local machine before running the game.
 
 1. **Clone the repository:**
    ```bash
