@@ -22,6 +22,8 @@ GREEN = (50, 220, 50)
 GOLD = (255, 210, 40)
 CYAN = (50, 200, 255)
 PURPLE = (150, 50, 200)
+UI_BG = (40, 45, 50)      # Külgmenüü taustavärv
+UI_BORDER = (70, 75, 80)  # Külgmenüü äärejoone värv
 
 FONT_NORMAL = pygame.font.SysFont("arial", 28, bold=True)
 FONT_SMALL = pygame.font.SysFont("arial", 20, bold=True)
@@ -29,17 +31,15 @@ FONT_BIG = pygame.font.SysFont("arial", 70, bold=True)
 
 PATH = [
     (0, 380), (250, 380), (250, 170), (650, 170),
-    (650, 580), (1050, 580), (1050, 280), (1400, 280)
+    (650, 580), (1050, 580), (1050, 280), (1200, 280) # Lühendatud poeala jaoks (1200)
 ]
 
-# Helper function to load images gracefully
 def load_image(filename, scale):
     if os.path.exists(filename):
         img = pygame.image.load(filename).convert_alpha()
         return pygame.transform.scale(img, scale)
     return None
 
-# Dictionary template (filled later in Game initialization)
 IMAGES = {
     "zombie": None,
     "tank": None,
@@ -158,7 +158,7 @@ class Tower:
             self.game.money -= self.upgrade_cost
             self.level += 1
             self.damage = int(self.damage * 1.5)
-            self.range += 10
+            self.range += 12
             self.fire_rate = max(10, self.fire_rate - 2)
             self.upgrade_cost += 50
 
@@ -188,7 +188,7 @@ class KnightTower(Tower):
 class ArcherTower(Tower):
     def __init__(self, game, x, y):
         super().__init__(game, x, y)
-        self.range = 280
+        self.range = 250
         self.damage = 15
         self.fire_rate = 15
         self.proj_speed = 20
@@ -198,7 +198,7 @@ class ArcherTower(Tower):
 class MageTower(Tower):
     def __init__(self, game, x, y):
         super().__init__(game, x, y)
-        self.range = 200
+        self.range = 180
         self.damage = 30
         self.fire_rate = 80
         self.proj_color = PURPLE
@@ -209,7 +209,7 @@ class MageTower(Tower):
 class SniperTower(Tower):
     def __init__(self, game, x, y):
         super().__init__(game, x, y)
-        self.range = 1000
+        self.range = 500
         self.damage = 150
         self.fire_rate = 120
         self.proj_speed = 35
@@ -277,10 +277,10 @@ class Zombie:
     def die(self):
         for _ in range(15):
             self.game.particles.append(Particle(self.x, self.y, RED))
-        self.game.money += 70
+        self.game.money += 40
 
     def draw(self, screen):
-        pygame.draw.ellipse(screen, (0, 0, 0, 100), (self.x - 20, self.y + self.radius, 40, 12))
+        pygame.draw.ellipse(screen, (0, 0, 0, 100), (self.x - 20, self.y + self.radius - 5, 40, 12))
         
         if self.img:
             rect = self.img.get_rect(center=(self.x, self.y))
@@ -298,11 +298,9 @@ class Zombie:
 
 class Game:
     def __init__(self):
-        # Create window FIRST so video mode is active
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Zombie Kingdom Defense ULTRA")
         
-        # Safe image loading now that screen exists
         global IMAGES
         IMAGES["zombie"] = load_image("zombie.png", (48, 48))
         IMAGES["tank"] = load_image("tank_zombie.png", (64, 64))
@@ -311,14 +309,29 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.running = True
-        
         self.state = "MENU" 
         self.selected_tower_type = KnightTower
         
+        # 4. PUNKT: Rekordi laadimine failist
+        self.highscore = self.load_highscore()
+        
         self.reset_game()
 
+    def load_highscore(self):
+        if os.path.exists("highscore.txt"):
+            try:
+                with open("highscore.txt", "r") as f:
+                    return int(f.read().strip())
+            except:
+                return 1
+        return 1
+
+    def save_highscore(self):
+        with open("highscore.txt", "w") as f:
+            f.write(str(self.highscore))
+
     def reset_game(self):
-        self.money = 600
+        self.money = 500
         self.lives = 20
         self.wave = 1
         self.zombies = []
@@ -358,16 +371,18 @@ class Game:
                     self.state = "PLAYING"
 
                 elif self.state == "PLAYING":
-                    if event.button == 1: 
-                        cost = self.selected_tower_type(self, 0, 0).upgrade_cost - 50 
-                        if self.money >= cost:
-                            self.towers.append(self.selected_tower_type(self, mx, my))
-                            self.money -= cost
+                    # Ei luba ehitada poepaneeli (X > 1200) peale
+                    if mx < 1200:
+                        if event.button == 1: 
+                            cost = self.selected_tower_type(self, 0, 0).upgrade_cost - 50 
+                            if self.money >= cost:
+                                self.towers.append(self.selected_tower_type(self, mx, my))
+                                self.money -= cost
 
-                    if event.button == 3: 
-                        for tower in self.towers:
-                            if math.hypot(tower.x - mx, tower.y - my) < 35:
-                                tower.upgrade()
+                        if event.button == 3: 
+                            for tower in self.towers:
+                                if math.hypot(tower.x - mx, tower.y - my) < 35:
+                                    tower.upgrade()
 
     def update_playing(self):
         self.spawn_timer += 1
@@ -396,6 +411,10 @@ class Game:
 
         if len(self.zombies) == 0 and self.zombies_to_spawn == 0:
             self.wave += 1
+            # 4. PUNKT: Rekordi uuendamine reaalajas
+            if self.wave > self.highscore:
+                self.highscore = self.wave
+                self.save_highscore()
             self.start_wave()
 
         if self.lives <= 0:
@@ -406,22 +425,62 @@ class Game:
         pygame.draw.lines(self.screen, DARK_ROAD, False, PATH, 90)
         pygame.draw.lines(self.screen, ROAD, False, PATH, 70)
         
-        pygame.draw.rect(self.screen, (90, 90, 90), (1240, 180, 120, 180))
-
         for tower in self.towers: tower.draw(self.screen)
         for zombie in self.zombies: zombie.draw(self.screen)
         for proj in self.projectiles: proj.draw(self.screen)
         for particle in self.particles: particle.draw(self.screen)
 
+        # 2. PUNKT: Torni ehituse leviala joonistamine (Range Preview)
+        mx, my = pygame.mouse.get_pos()
+        if mx < 1200 and my > 80:
+            # Loome ajutise torni, et teada selle ulatust ja värvi
+            temp_tower = self.selected_tower_type(self, mx, my)
+            
+            # Poolläbipaistva ringi joonistamine Pygame pinna (Surface) abil
+            range_surf = pygame.Surface((temp_tower.range * 2, temp_tower.range * 2), pygame.SRCALPHA)
+            pygame.draw.circle(range_surf, (temp_tower.color[0], temp_tower.color[1], temp_tower.color[2], 60), (temp_tower.range, temp_tower.range), temp_tower.range)
+            pygame.draw.circle(range_surf, (temp_tower.color[0], temp_tower.color[1], temp_tower.color[2], 180), (temp_tower.range, temp_tower.range), temp_tower.range, 2)
+            self.screen.blit(range_surf, (mx - temp_tower.range, my - temp_tower.range))
+
+        # Ülemine staatuse riba
         pygame.draw.rect(self.screen, (25, 25, 25), (0, 0, WIDTH, 80))
         self.screen.blit(FONT_NORMAL.render(f"GOLD: {self.money}", True, GOLD), (20, 20))
         self.screen.blit(FONT_NORMAL.render(f"LIVES: {self.lives}", True, WHITE), (250, 20))
-        self.screen.blit(FONT_NORMAL.render(f"WAVE: {self.wave}", True, WHITE), (500, 20))
-        
-        selection_name = self.selected_tower_type.__name__
-        self.screen.blit(FONT_NORMAL.render(f"SELECTED: {selection_name}", True, CYAN), (800, 20))
+        self.screen.blit(FONT_NORMAL.render(f"WAVE: {self.wave}", True, WHITE), (480, 20))
+        self.screen.blit(FONT_NORMAL.render(f"HIGH SCORE: {self.highscore}", True, GOLD), (680, 20))
 
-        controls = FONT_SMALL.render("KEYS 1-4 = SELECT TOWER | L-CLICK = BUILD | R-CLICK = UPGRADE | ESC = PAUSE", True, WHITE)
+        # 3. PUNKT: Külgmenüü (Shop UI) joonistamine
+        pygame.draw.rect(self.screen, UI_BG, (1200, 80, 200, HEIGHT - 80))
+        pygame.draw.line(self.screen, UI_BORDER, (1200, 80), (1200, HEIGHT), 4)
+
+        shop_title = FONT_NORMAL.render("TOWERS SHOP", True, WHITE)
+        self.screen.blit(shop_title, (1215, 100))
+        
+        # Info poodi nimekirja kuvamiseks
+        tower_info = [
+            ("1. Knight", 100, (70, 100, 255)),
+            ("2. Archer", 50, (50, 200, 50)),
+            ("3. Mage", 200, (180, 50, 180)),
+            ("4. Sniper", 250, (200, 50, 50))
+        ]
+
+        # Joonistame poe valikud
+        for i, (name, price, color) in enumerate(tower_info):
+            y_pos = 160 + i * 110
+            
+            # Kui see tüüp on parajasti valitud, joonistame ümber esiletõstmise kasti
+            current_type_name = self.selected_tower_type.__name__.lower()
+            if name.split(". ")[1].lower() in current_type_name:
+                pygame.draw.rect(self.screen, (60, 80, 100), (1210, y_pos - 10, 180, 95), border_radius=8)
+                pygame.draw.rect(self.screen, CYAN, (1210, y_pos - 10, 180, 95), 2, border_radius=8)
+            else:
+                pygame.draw.rect(self.screen, (30, 33, 35), (1210, y_pos - 10, 180, 95), border_radius=8)
+
+            pygame.draw.circle(self.screen, color, (1235, y_pos + 20), 12)
+            self.screen.blit(FONT_SMALL.render(name, True, WHITE), (1260, y_pos + 8))
+            self.screen.blit(FONT_SMALL.render(f"Cost: {price} Gold", True, GOLD), (1260, y_pos + 32))
+
+        controls = FONT_SMALL.render("L-CLICK = BUILD | R-CLICK = UPGRADE TOWER | ESC = PAUSE", True, WHITE)
         self.screen.blit(controls, (20, HEIGHT - 35))
 
     def draw(self):
@@ -429,8 +488,11 @@ class Game:
             self.screen.fill(BLACK)
             title = FONT_BIG.render("ZOMBIE KINGDOM DEFENSE", True, GREEN)
             prompt = FONT_NORMAL.render("Click Anywhere to Start", True, WHITE)
-            self.screen.blit(title, (WIDTH//2 - title.get_width()//2, 300))
-            self.screen.blit(prompt, (WIDTH//2 - prompt.get_width()//2, 450))
+            hs_text = FONT_NORMAL.render(f"Current High Score: Wave {self.highscore}", True, GOLD)
+            
+            self.screen.blit(title, (WIDTH//2 - title.get_width()//2, 260))
+            self.screen.blit(prompt, (WIDTH//2 - prompt.get_width()//2, 400))
+            self.screen.blit(hs_text, (WIDTH//2 - hs_text.get_width()//2, 480))
 
         elif self.state == "PLAYING":
             self.draw_playing()
@@ -447,9 +509,12 @@ class Game:
         elif self.state == "GAME_OVER":
             self.screen.fill(BLACK)
             over_txt = FONT_BIG.render("THE KINGDOM HAS FALLEN", True, RED)
+            score_txt = FONT_NORMAL.render(f"You reached Wave {self.wave} | High Score: Wave {self.highscore}", True, GOLD)
             restart_txt = FONT_NORMAL.render("Click Anywhere to Restart", True, WHITE)
-            self.screen.blit(over_txt, (WIDTH//2 - over_txt.get_width()//2, 300))
-            self.screen.blit(restart_txt, (WIDTH//2 - restart_txt.get_width()//2, 450))
+            
+            self.screen.blit(over_txt, (WIDTH//2 - over_txt.get_width()//2, 260))
+            self.screen.blit(score_txt, (WIDTH//2 - score_txt.get_width()//2, 380))
+            self.screen.blit(restart_txt, (WIDTH//2 - restart_txt.get_width()//2, 460))
 
         pygame.display.flip()
 
