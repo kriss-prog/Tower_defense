@@ -1,50 +1,61 @@
-# 🧟 Zombie Kingdom Defense ULTRA
+🧟 Zombie Kingdom Defense ULTRA
+Strateegiline ja põnevust täis tower defense mäng, mis on loodud täielikult nullist, kasutades Pythonit ja Pygame teeki. Kaitse oma kuningriigi teerada lõputute ja järjest tugevamaks muutuvate zombilainete eest ning valmista oma kaitseliin ette võimsateks bossilahinguteks, mis saabuvad iga 5 laine tagant!
 
-A strategic, action-packed tower defense game built from scratch using Python and the Pygame library. Defend your kingdom path against endless, scaling waves of zombies, and prepare your defenses for the massive Boss fights that arrive every 5 waves!
+🚀 Funktsioonid
+Dünaamiline raskusastme süsteem: Zombid saavad iga uue lainega juurde elusid ja liikumiskiirust, hoides mängu pidevalt väljakutsuvana.
 
----
+Iga 5. laine on BOSSI LAINE: Seisa silmitsi hiiglasliku Boss-zombiga, kellel on tavalisest 10x rohkem elusid ja kuldne kroon. Boss ei tule üksi — temaga koos ründab taktikaline rühm väiksemaid käsilasi!
 
-## 🚀 Features
+Dünaamiline visuaal: Täielikult koodiga joonistatud graafika. Vaata, kuidas sinu tornid reaalajas pöörlevad, sihivad ja sihtmärke jälitavad.
 
-* **Dynamic Scaling System**: Zombies dynamically gain more health and movement speed with each passing wave, keeping the gameplay challenging.
-* **Every 5 Waves - BOSS WAVE**: Face a colossal Boss Zombie equipped with 10x normal health and a golden crown. The Boss doesn't come alone—a tactical wave of smaller minions runs alongside him!
-* **Dynamic Visual Models**: Built entirely with code-rendered graphics. Watch your towers dynamically rotate, aim, and track targets in real-time.
-* **4 Specialized Tower Types**:
-    * ⚔️ **Knight Tower** ($100 Gold): High-damage physical attacker with balanced range.
-    * 🏹 **Archer Tower** ($100 Gold): Rapid firing speed, perfect for cleaning up fast moving targets.
-    * 🔮 **Mage Tower** ($200 Gold): Deals powerful Area-of-Effect (AoE) splash damage with magical bursts.
-    * 🎯 **Sniper Tower** ($500 Gold): Long-range caliber designed specifically to melt down high-health Bosses and Tanks.
-* **Refund/Sell Subsystem**: Instantly enter Sell Mode to remove existing towers and recover **75% of their total value** in gold.
-* **Persistent High Scores**: Tracks and saves your highest wave locally using a `highscore.txt` profile.
+4 spetsialiseerunud tornitüüpi:
 
----
+⚔️ Knight Tower ($100 kulda): Suure füüsilise kahjuga ründaja, tasakaalustatud laskeulatusega.
 
-## 🎮 Controls & How to Play
+🏹 Archer Tower ($100 kulda): Kiire tulistamissagedus, ideaalne kiirete sihtmärkide hävitamiseks.
 
-Manage your economy carefully, choose the right towers for the job, and remember to upgrade your frontline defenses!
+🔮 Mage Tower ($200 kulda): Teeb võimsat maa-ala kahjustust (AoE splash damage) maagiliste plahvatustega.
 
-### Mouse Actions
-* 🖱️ **`Left-Click`**: 
-    * *In Game Area*: Place your currently selected tower type on the grass.
-    * *In Sell Mode*: Click on a tower to instantly sell it for a 75% refund.
-    * *In Menus*: Click anywhere to start or restart the game.
-* 🖱️ **`Right-Click`**: Click on an already placed tower to **Upgrade** it. Upgrades permanently increase its damage, range, and attack speed.
+🎯 Sniper Tower ($500 kulda): Suure laskeulatusega kaliiber, mis on mõeldud spetsiaalselt elurikaste bosside ja tankide hävitamiseks.
 
-### Keyboard Shortcuts
-* ⌨️ **`1`** — Select **Knight Tower**
-* ⌨️ **`2`** — Select **Archer Tower**
-* ⌨️ **`3`** — Select **Mage Tower**
-* ⌨️ **`4`** — Select **Sniper Tower**
-* ⌨️ **`S`** — Toggle **Sell Mode** on / off
-* ⌨️ **`ESC`** — Pause / Resume the game
+Müügi ja tagasimakse süsteem: Lülitu müügirežiimi (Sell Mode), et eemaldada olemasolevaid torne ja saada tagasi 75% nende koguväärtusest.
 
----
+Püsiv edetabel: Mäng jälgib ja salvestab sinu kõrgeimat lainet kohalikku highscore.txt faili.
 
-## 🛠️ Installation & Setup
+🎮 Juhtimine ja mängimine
+Majanda oma raha hoolikalt, vali õiged tornid õigeks tööks ja pea meeles oma esirinde kaitset uuendada!
 
-Make sure you have Python 3.x and Pygame installed on your local machine before running the game.
+Hiire tegevused
+🖱️ Vasak klõps:
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/kriss-prog/Tower_defense.git](https://github.com/kriss-prog/Tower_defense.git)
-   cd Tower_defense
+Mängualas: Aseta valitud tornitüüp murule.
+
+Müügirežiimis: Klõpsa tornile, et see kohe 75% tagasimaksega maha müüa.
+
+Menüüdes: Klõpsa mistahes kohas, et mängu alustada või uuesti alustada.
+
+🖱️ Parem klõps: Klõpsa juba asetatud tornile, et seda uuendada (Upgrade). Uuendused suurendavad püsivalt torni kahju, laskeulatust ja ründekiirust.
+
+Kiirklahvid
+⌨️ 1 — Vali Knight Tower
+
+⌨️ 2 — Vali Archer Tower
+
+⌨️ 3 — Vali Mage Tower
+
+⌨️ 4 — Vali Sniper Tower
+
+⌨️ S — Lülita müügirežiim sisse / välja
+
+⌨️ ESC — Pane mäng pausile / jätka mängu
+
+🛠️ Paigaldamine ja seadistamine
+Enne mängu käivitamist veendu, et sinu arvutisse on paigaldatud Python 3.x ja Pygame teek.
+
+Klooni hoidla:
+
+Bash
+
+
+git clone https://github.com/kriss-prog/Tower_defense.git
+cd Tower_defense
