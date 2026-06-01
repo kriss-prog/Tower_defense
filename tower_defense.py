@@ -5,14 +5,11 @@ import os
 
 pygame.init()
 
-# ==========================================
-# CONSTANTS & ASSETS
-# ==========================================
+# KONSTANDID JA RESSURSID
 
 WIDTH, HEIGHT = 1400, 800
 FPS = 60
 
-# Täiustatud värvipalett
 GRASS = (45, 115, 45)
 GRASS_DETAIL = (35, 100, 35)
 ROAD = (135, 105, 75)
@@ -31,6 +28,7 @@ FONT_NORMAL = pygame.font.SysFont("arial", 26, bold=True)
 FONT_SMALL = pygame.font.SysFont("arial", 18, bold=True)
 FONT_BIG = pygame.font.SysFont("arial", 65, bold=True)
 
+# Zombide liikumistrajektoor
 PATH = [
     (0, 380), (250, 380), (250, 170), (650, 170),
     (650, 580), (1050, 580), (1050, 280), (1200, 280)
@@ -42,11 +40,10 @@ for _ in range(120):
     ry = random.randint(80, HEIGHT)
     BACKGROUND_DETAILS.append((rx, ry, random.randint(3, 6)))
 
-# ==========================================
-# ENTITIES & PROJECTILES
-# ==========================================
+# OLEMID JA MÜRSUD
 
 class Particle:
+    # Visuaalsed efektid (plahvatused, verepritsmed)
     def __init__(self, x, y, color):
         self.x, self.y = x, y
         self.dx = random.uniform(-2.5, 2.5)
@@ -65,6 +62,7 @@ class Particle:
 
 
 class Projectile:
+    # Tornide tulistatud mürsud
     def __init__(self, game, x, y, target, damage, speed, color=WHITE, is_aoe=False):
         self.game = game
         self.x, self.y = x, y
@@ -109,11 +107,10 @@ class Projectile:
         pygame.draw.circle(screen, (0, 0, 0), (int(self.x), int(self.y) + 2), 7)
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 6)
 
-# ==========================================
-# TOWERS
-# ==========================================
+# TORNID
 
 class Tower:
+    # Baasklass kõikidele tornidele
     def __init__(self, game, x, y):
         self.game = game
         self.x, self.y = x, y
@@ -183,7 +180,7 @@ class Tower:
         txt = FONT_SMALL.render(str(self.level), True, GOLD)
         screen.blit(txt, (self.x - txt.get_width()//2, self.y + 22))
 
-
+# Erinevad tornitüübid
 class KnightTower(Tower):
     def __init__(self, game, x, y):
         super().__init__(game, x, y)
@@ -230,9 +227,7 @@ class SniperTower(Tower):
         self.upgrade_cost = 350
         self.color = (178, 34, 34)
 
-# ==========================================
-# ZOMBIE & BOSS
-# ==========================================
+# VAENLASED
 
 class Zombie:
     def __init__(self, game, is_boss=False):
@@ -308,7 +303,10 @@ class Zombie:
         
         eye_color = RED if self.is_boss else WHITE
         pygame.draw.circle(screen, eye_color, (int(self.x) + 4, int(self.y) - 4), 4)
-        pygame.draw.circle(screen, eye_color, (int(self.x) + 14, int(self.y) - 4), 4) if self.is_boss else pygame.draw.circle(screen, eye_color, (int(self.x) - 4, int(self.y) - 4), 4)
+        if self.is_boss:
+            pygame.draw.circle(screen, eye_color, (int(self.x) + 14, int(self.y) - 4), 4)
+        else:
+            pygame.draw.circle(screen, eye_color, (int(self.x) - 4, int(self.y) - 4), 4)
         
         if self.is_boss:
             points = [
@@ -324,9 +322,7 @@ class Zombie:
         pygame.draw.rect(screen, BLACK, (self.x - bar_width//2, self.y - self.radius - 12, bar_width, 6))
         pygame.draw.rect(screen, GREEN, (self.x - bar_width//2, self.y - self.radius - 12, bar_width * health_ratio, 6))
 
-# ==========================================
-# GAME MANAGER
-# ==========================================
+# MÄNGU PEAKLASS
 
 class Game:
     def __init__(self):
@@ -335,7 +331,7 @@ class Game:
         
         self.clock = pygame.time.Clock()
         self.running = True
-        self.state = "MENU" 
+        self.state = "MENU"
         self.selected_tower_type = KnightTower
         self.sell_mode = False
         
@@ -365,10 +361,8 @@ class Game:
         self.start_wave()
 
     def start_wave(self):
-        # MUUDETUD SPAWNI LOOGIKA:
         if self.wave % 5 == 0:
             self.boss_needs_spawn = True
-            # Tuleb ka väiksemaid zombisid, aga poole vähem kui muidu (Rate vähendatud)
             self.zombies_to_spawn = (6 + self.wave * 3) // 2
         else:
             self.boss_needs_spawn = False
@@ -400,11 +394,13 @@ class Game:
                     self.reset_game()
                     self.state = "PLAYING"
                 elif self.state == "PLAYING":
+                    # Küljemenüü (UI) klikkimine
                     if mx >= 1200:
                         if 1210 <= mx <= 1390 and 610 <= my <= 670:
                             self.sell_mode = not self.sell_mode
                         return
 
+                    # Mänguväljale klikkimine
                     if mx < 1200 and my > 80:
                         if self.sell_mode:
                             if event.button == 1:
@@ -436,26 +432,22 @@ class Game:
     def update_playing(self):
         self.spawn_timer += 1
         
-        # Spawni tsükkel
+        # Vaenlaste loomine
         if self.wave % 5 == 0:
-            # Bossi laine loogika
             if self.boss_needs_spawn and self.spawn_timer >= 40:
                 self.zombies.append(Zombie(self, is_boss=True))
                 self.boss_needs_spawn = False
                 self.spawn_timer = 0
             elif not self.boss_needs_spawn and self.spawn_timer >= 65 and self.zombies_to_spawn > 0:
-                # Pärast bossi tulevad väiksed zombid natuke aeglasema sammuga (Rate madalam)
                 self.zombies.append(Zombie(self, is_boss=False))
                 self.zombies_to_spawn -= 1
                 self.spawn_timer = 0
         else:
-            # Tavaline laine
             if self.spawn_timer >= 45 and self.zombies_to_spawn > 0:
                 self.zombies.append(Zombie(self, is_boss=False))
                 self.zombies_to_spawn -= 1
                 self.spawn_timer = 0
 
-        # Üksuste uuendused
         for zombie in self.zombies[:]:
             if not zombie.update():
                 self.zombies.remove(zombie)
@@ -474,7 +466,7 @@ class Game:
             if particle.life <= 0:
                 self.particles.remove(particle)
 
-        # Kontroll, kas laine sai läbi
+        # Laine lõppemise kontroll
         if len(self.zombies) == 0 and self.zombies_to_spawn == 0 and not self.boss_needs_spawn:
             self.wave += 1
             if self.wave > self.highscore:
@@ -487,6 +479,7 @@ class Game:
 
     def draw_playing(self):
         self.screen.fill(GRASS)
+        
         for detail in BACKGROUND_DETAILS:
             pygame.draw.circle(self.screen, GRASS_DETAIL, (detail[0], detail[1]), detail[2])
 
@@ -503,6 +496,7 @@ class Game:
         for proj in self.projectiles: proj.draw(self.screen)
         for particle in self.particles: particle.draw(self.screen)
 
+        # Dünaamiline kursor ja torni laskeulatus
         mx, my = pygame.mouse.get_pos()
         if mx < 1200 and my > 80:
             if self.sell_mode:
@@ -514,7 +508,7 @@ class Game:
                 pygame.draw.circle(range_surf, (temp_tower.color[0], temp_tower.color[1], temp_tower.color[2], 160), (temp_tower.range, temp_tower.range), temp_tower.range, 2)
                 self.screen.blit(range_surf, (mx - temp_tower.range, my - temp_tower.range))
 
-        # Ülemine riba
+        # Ülemine UI riba
         pygame.draw.rect(self.screen, (22, 24, 28), (0, 0, WIDTH, 80))
         pygame.draw.line(self.screen, UI_BORDER, (0, 80), (WIDTH, 80), 2)
         
@@ -526,7 +520,7 @@ class Game:
         self.screen.blit(FONT_NORMAL.render(wave_label, True, wave_color), (460, 24))
         self.screen.blit(FONT_NORMAL.render(f"HIGH SCORE: {self.highscore}", True, GOLD), (740, 24))
 
-        # KÜLGMENÜÜ (SHOP UI)
+        # Küljemenüü (Pood)
         pygame.draw.rect(self.screen, UI_BG, (1200, 80, 200, HEIGHT - 80))
         pygame.draw.line(self.screen, UI_BORDER, (1200, 80), (1200, HEIGHT), 4)
 
@@ -554,7 +548,7 @@ class Game:
             self.screen.blit(FONT_SMALL.render(name, True, WHITE), (1265, y_pos + 10))
             self.screen.blit(FONT_SMALL.render(f"Cost: {price}", True, GOLD), (1265, y_pos + 36))
 
-        # SELL BUTTON
+        # Müügi nupp
         if self.sell_mode:
             pygame.draw.rect(self.screen, RED, (1210, 610, 180, 60), border_radius=8)
             sell_text = FONT_NORMAL.render("CANCEL SELL", True, WHITE)
